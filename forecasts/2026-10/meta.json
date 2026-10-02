@@ -1,0 +1,10 @@
+{
+  "frozen_utc": "2026-10-02T20:14:48+00:00",
+  "git_commit_at_freeze": "1908f8a939468e3a168ea56b51d1bc325fe043b0",
+  "sec_data_through": "2026 Q2",
+  "last_public_day": "2026-07-01",
+  "claim": "insider clock: buys beat SPY in the first week. public clock: nothing after day 1, buys or sales",
+  "sha256": {
+    "results.csv": "8551d26fa6987c0e97a3363fd359fe55edf5470d8a73ba851339da449c54b84e"
+  }
+}
