@@ -1,0 +1,26 @@
+# S&P 500 tickers that the automatic match in src/ingest.py misses, mostly because the history file uses a
+# later ticker than the one on the filings at the time. start and end are optional (empty = the whole time
+# the ticker was in the index). Found through data/sp500_gaps.csv and the "no match" lines in universe.csv.
+ticker,cik,start,end,note
+ANRZQ,1301063,,,Alpha Natural Resources filed as ANR
+ATGE,730464,,,DeVry filed as DV until 2017
+BHGE,808362,,2017-07-03,Baker Hughes Inc filed as BHI before the GE deal
+BNY,1390777,,,Bank of New York Mellon changed ticker from BK in 2026 and files as BK
+CCTYQ,104599,,,Circuit City filed as CC
+CITGQ,1171825,,,CIT Group filed as CIT
+CMCSK,1166691,,,Comcast class K same company as CMCSA
+DCNAQ,26780,,,Dana Corp filed as DCN
+DXC,23082,,2017-04-03,Computer Sciences Corp filed as CSC
+FOXA,1308161,,2019-03-19,News Corp then Twenty-First Century Fox filed as NWS and FOX
+FOXA,1754301,2019-03-19,,Fox Corp after the Disney deal
+GOOGL,1288776,,2015-10-05,Google Inc filed as GOOG before Alphabet
+IAC,891103,,,IAC/InterActiveCorp filed as IACI
+KATE,352363,,,Liz Claiborne filed as LIZ
+KRI,205520,,,Knight Ridder filed as KRIC
+NWSA,1564708,,,the new News Corp files as NWS
+PSKY,813828,,,Paramount Global before the Skydance merger. Its price history is under PSKY
+RSHCQ,96289,,,RadioShack filed as RSH
+SUNEQ,945436,,,MEMC Electronic Materials filed as WFR
+VMRK,906107,,,Equity Residential became Vivmark Residential in Aug 2026. Its price history is under VMRK
+WAMUQ,933136,,,Washington Mutual filed as WM
+WBA,104207,,2014-12-31,Walgreen Co filed as WAG before the Boots merger

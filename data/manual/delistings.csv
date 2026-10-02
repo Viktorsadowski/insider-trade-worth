@@ -1,0 +1,153 @@
+# What happened to every price series that ends before the last day of the data. Made by hand from the
+# companies' own announcements (the 8-Ks are on sec.gov under each company).
+#   cash     bought for cash: the deal price is the last price
+#   stock    paid in shares, or in shares and cash, or the ticker only changed: the last traded price is the value
+#   failure  the shares were cancelled: the stock ends at 0
+# last_day is the last real trading day in the series (prices.py cuts the repeated prices after it), events.py
+# warns when the series ends somewhere else.
+ticker,last_day,type,cash_price,note
+AABA,2019-10-01,stock,,Altaba dissolved Oct 2019 and paid the money out in steps
+ABMD,2022-12-21,cash,380.00,Johnson & Johnson Dec 2022 (plus a right to up to $35 more)
+ACAS,2017-01-03,stock,,Ares Capital Jan 2017 (cash and shares)
+AET,2018-11-28,stock,,CVS Health Nov 2018 ($145 cash + 0.8378 CVS)
+AGN,2020-05-08,stock,,AbbVie May 2020 ($120.30 cash + 0.866 ABBV)
+AKS,2020-03-12,stock,,Cleveland-Cliffs Mar 2020
+ALXN,2021-07-20,stock,,AstraZeneca Jul 2021 ($60 cash + 2.1243 ADS)
+AMCC,2017-01-26,stock,,MACOM Jan 2017 (cash and shares)
+ANDV,2018-09-28,stock,,Marathon Petroleum Oct 2018 (cash or shares)
+ANRZQ,2016-07-27,failure,,Alpha Natural Resources: Chapter 11 Aug 2015 and shares cancelled Jul 2016
+ANSS,2025-07-17,stock,,Synopsys Jul 2025 ($197 cash + 0.345 SNPS)
+ARG,2016-05-19,cash,143.00,Air Liquide May 2016
+ATVI,2023-10-12,cash,95.00,Microsoft Oct 2023
+AVB,2026-08-14,stock,,merged with Equity Residential into Vivmark Residential Aug 2026
+AVP,2020-01-03,stock,,Natura Jan 2020
+AYE,2011-02-25,stock,,FirstEnergy Feb 2011
+BCR,2017-12-28,stock,,Becton Dickinson Dec 2017 ($222.93 cash + 0.5077 BDX)
+BJS,2010-04-28,stock,,Baker Hughes Apr 2010 ($2.69 cash + 0.40035 BHI)
+BMS,2019-06-10,stock,,Amcor Jun 2019
+BRCM,2016-01-29,stock,,Avago Feb 2016 (cash or shares)
+BRL,2008-12-22,stock,,Teva Dec 2008 ($39.90 cash + 0.6272 ADS)
+BXLT,2016-06-02,stock,,Shire Jun 2016 ($18 cash + 0.1482 ADS)
+CAM,2016-04-01,stock,,Schlumberger Apr 2016 ($14.44 cash + 0.716 SLB)
+CELG,2019-11-20,stock,,Bristol-Myers Squibb Nov 2019 ($50 cash + 1 BMY + a right)
+CERN,2022-06-07,cash,95.00,Oracle Jun 2022
+CFN,2015-03-16,stock,,Becton Dickinson Mar 2015 ($49 cash + 0.0777 BDX)
+CHK,2021-02-09,failure,,Chesapeake Energy: Chapter 11 Jun 2020 and old shares cancelled Feb 2021 (the new shares are EXE)
+CMA,2026-01-30,stock,,Fifth Third Jan 2026
+CMCSK,2015-12-11,stock,,Comcast class A special shares became CMCSA Dec 2015
+COL,2018-11-26,stock,,United Technologies Nov 2018 ($93.33 cash + shares)
+COV,2015-01-26,stock,,Medtronic Jan 2015 ($35.19 cash + 0.956 MDT)
+CPGX,2016-06-30,cash,25.50,TransCanada Jul 2016
+CPWR,2014-12-15,stock,,Thoma Bravo Dec 2014 ($10.25 cash after the Covisint shares were handed out)
+CTB,2021-06-04,stock,,Goodyear Jun 2021 ($41.75 cash + 0.907 GT)
+CTLT,2024-12-16,cash,63.50,Novo Holdings Dec 2024
+CTRA,2026-05-06,stock,,Devon Energy May 2026
+CTXS,2022-09-29,cash,104.00,Vista and Elliott Sep 2022
+CVC,2016-06-20,cash,34.90,Altice Jun 2016
+CVG,2018-10-04,stock,,Synnex Oct 2018 ($13.25 cash + 0.1263 SNX)
+CVH,2013-05-06,stock,,Aetna May 2013 ($27.30 cash + 0.3885 AET)
+CXO,2021-01-15,stock,,ConocoPhillips Jan 2021
+DAY,2026-02-03,cash,70.00,Thoma Bravo Feb 2026
+DDR,2018-10-11,stock,,DDR Corp changed name and ticker to SITE Centers (SITC) Oct 2018
+DFS,2025-05-16,stock,,Capital One May 2025
+DISCK,2022-04-08,stock,,Discovery became Warner Bros. Discovery (WBD) Apr 2022
+DISH,2023-12-29,stock,,EchoStar Dec 2023
+DNR,2020-07-28,failure,,Denbury Resources: Chapter 11 Jul 2020 and old shares cancelled Sep 2020
+DRE,2022-09-30,stock,,Prologis Oct 2022
+EA,2026-08-04,cash,210.00,PIF Silver Lake and Affinity Partners Aug 2026
+ESRX,2018-12-20,stock,,Cigna Dec 2018 ($48.75 cash + 0.2434 CI)
+ETFC,2020-10-01,stock,,Morgan Stanley Oct 2020
+EVHC,2018-10-10,cash,46.00,KKR Oct 2018
+FDO,2015-07-06,stock,,Dollar Tree Jul 2015 ($59.60 cash + 0.2484 DLTR)
+FL,2025-09-05,stock,,Dick's Sporting Goods Sep 2025 ($24 cash or 0.1168 DKS)
+FLIR,2021-05-13,stock,,Teledyne May 2021 ($28 cash + 0.0718 TDY)
+FRX,2014-06-30,stock,,Actavis Jul 2014 (cash and shares)
+GAS,2016-06-30,cash,66.00,Southern Company bought AGL Resources Jul 2016
+GGP,2018-08-27,stock,,Brookfield Property Partners Aug 2018 (cash or units)
+GMCR,2016-03-02,cash,92.00,JAB Mar 2016
+HAR,2017-03-09,cash,112.00,Samsung Mar 2017
+HBI,2025-12-01,stock,,Gildan Dec 2025 (0.102 GIL + $0.80 cash)
+HCBK,2015-10-30,stock,,M&T Bank Nov 2015
+HES,2025-07-17,stock,,Chevron Jul 2025
+HNZ,2013-06-07,cash,72.50,Berkshire Hathaway and 3G Jun 2013
+HOLX,2026-04-06,cash,76.00,Blackstone and TPG Apr 2026 (plus a right to up to $3 more)
+HOT,2016-09-22,stock,,Marriott Sep 2016
+HPC,2008-11-13,stock,,Ashland Nov 2008 ($18.60 cash + 0.093 ASH)
+HSH,2014-08-27,cash,63.00,Tyson Foods Aug 2014
+HSP,2015-09-02,cash,90.00,Pfizer Sep 2015
+IPG,2025-11-26,stock,,Omnicom Nov 2025
+JNPR,2025-07-01,cash,40.00,Hewlett Packard Enterprise Jul 2025
+JNS,2017-05-26,stock,,merged with Henderson into Janus Henderson May 2017
+JNY,2014-04-08,cash,15.00,Sycamore Partners Apr 2014
+JOY,2017-04-05,cash,28.30,Komatsu Apr 2017
+JWN,2025-05-20,stock,,the Nordstrom family and Liverpool May 2025 ($24.25 cash + a special dividend)
+K,2025-12-10,cash,83.50,Mars Dec 2025
+KATE,2017-07-07,cash,18.50,Coach Jul 2017
+KRFT,2015-07-02,stock,,merged with Heinz into Kraft Heinz Jul 2015 (1 KHC + $16.50 dividend)
+KSU,2021-12-13,stock,,Canadian Pacific Dec 2021 ($90 cash + 2.884 CP)
+LEG,2026-08-26,stock,,Somnigroup Aug 2026 (0.1455 SGI)
+LLL,2019-06-28,stock,,merged with Harris into L3Harris Jun 2019
+LLTC,2017-03-10,stock,,Analog Devices Mar 2017 ($46 cash + 0.2321 ADI)
+LM,2020-07-27,cash,50.00,Franklin Resources Jul 2020
+LO,2015-06-11,stock,,Reynolds American Jun 2015 ($50.50 cash + 0.2909 RAI)
+LVLT,2017-10-31,stock,,CenturyLink Nov 2017 ($26.50 cash + 1.4286 CTL)
+MER,2008-12-31,stock,,Bank of America Jan 2009
+MFE,2011-02-28,cash,48.00,Intel Feb 2011
+MHS,2012-03-30,stock,,Express Scripts Apr 2012 ($28.80 cash + 0.81 ESRX)
+MJN,2017-06-14,cash,90.00,Reckitt Benckiser Jun 2017
+MRO,2024-11-21,stock,,ConocoPhillips Nov 2024
+MWV,2015-07-01,stock,,merged with Rock-Tenn into WestRock Jul 2015
+MWW,2016-10-31,cash,3.40,Randstad Nov 2016
+MXIM,2021-08-25,stock,,Analog Devices Aug 2021
+MYL,2020-11-16,stock,,merged with Upjohn into Viatris (VTRS) Nov 2020
+NAV,2021-06-30,cash,44.50,Traton Jul 2021
+NBL,2020-10-02,stock,,Chevron Oct 2020
+NLSN,2022-10-11,cash,28.00,Elliott and Brookfield Oct 2022
+NVLS,2012-06-04,stock,,Lam Research Jun 2012
+ODP,2025-12-10,cash,28.00,Atlas Holdings Dec 2025
+OMX,2013-11-05,stock,,Office Depot Nov 2013
+PBCT,2022-04-01,stock,,M&T Bank Apr 2022
+PBG,2010-02-26,stock,,PepsiCo Feb 2010 (cash or shares)
+PCL,2016-02-19,stock,,Weyerhaeuser Feb 2016
+PCP,2016-01-29,cash,235.00,Berkshire Hathaway Jan 2016
+PDCO,2025-04-16,cash,31.35,Patient Square Capital Apr 2025
+PETM,2015-03-11,cash,83.00,BC Partners Mar 2015
+PX,2018-10-30,stock,,merged with Linde Oct 2018
+PXD,2024-05-02,stock,,ExxonMobil May 2024
+QEP,2021-03-16,stock,,Diamondback Energy Mar 2021
+RAI,2017-07-24,stock,,British American Tobacco Jul 2017 ($29.44 cash + 0.526 ADS)
+RDC,2019-04-10,stock,,Ensco Apr 2019
+RHT,2019-07-05,cash,190.00,IBM Jul 2019
+ROH,2009-04-01,cash,78.00,Dow Chemical Apr 2009
+RRD,2022-02-24,cash,10.85,Chatham Asset Management Feb 2022
+RTN,2020-04-02,stock,,merged with United Technologies into Raytheon Technologies Apr 2020
+SCG,2018-12-31,stock,,Dominion Energy Jan 2019
+SEE,2026-04-08,cash,42.15,CD&R Apr 2026
+SIAL,2015-11-17,cash,140.00,Merck KGaA Nov 2015
+SNI,2018-03-06,stock,,Discovery Mar 2018 ($65.82 cash + shares)
+SNV,2025-12-31,stock,,merged with Pinnacle Financial Partners Jan 2026
+SOV,2009-01-29,stock,,Banco Santander Jan 2009
+SRCL,2024-11-01,cash,62.00,Waste Management Nov 2024
+STJ,2017-01-04,stock,,Abbott Jan 2017 ($46.75 cash + 0.8708 ABT)
+SVU,2018-10-18,cash,32.50,United Natural Foods Oct 2018
+SWN,2024-09-30,stock,,Chesapeake Energy Oct 2024
+SWY,2015-01-29,stock,,Albertsons Jan 2015 ($34.92 cash + rights to later payments)
+TEG,2015-06-29,stock,,Wisconsin Energy Jun 2015 ($18.58 cash + 1.128 WEC)
+TGNA,2026-03-19,cash,22.00,Nexstar Mar 2026
+TIE,2013-01-02,cash,16.50,Precision Castparts Jan 2013
+TIF,2021-01-06,cash,131.50,LVMH Jan 2021
+TSS,2019-09-17,stock,,Global Payments Sep 2019
+TWC,2016-05-17,stock,,Charter Communications May 2016 (cash and shares)
+TWTR,2022-10-27,cash,54.20,Elon Musk Oct 2022
+TWX,2018-06-14,stock,,AT&T Jun 2018 ($53.75 cash + 1.437 T)
+VAR,2021-04-14,cash,177.50,Siemens Healthineers Apr 2021
+VIAB,2019-12-04,stock,,merged with CBS into ViacomCBS Dec 2019
+WBA,2025-08-27,stock,,Sycamore Partners Aug 2025 ($11.45 cash + a right to up to $3 more)
+WCG,2020-01-23,stock,,Centene Jan 2020 ($120 cash + 3.38 CNC)
+WFM,2017-08-25,cash,42.00,Amazon Aug 2017
+WPX,2021-01-06,stock,,Devon Energy Jan 2021
+X,2025-06-17,cash,55.00,Nippon Steel Jun 2025
+XEC,2021-09-30,stock,,merged with Cabot Oil & Gas into Coterra Oct 2021
+XL,2018-09-11,cash,57.60,AXA Sep 2018
+XLNX,2022-02-11,stock,,AMD Feb 2022
+XTO,2010-06-25,stock,,ExxonMobil Jun 2010
