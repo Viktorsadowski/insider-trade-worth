@@ -1,10 +1,10 @@
 {
-  "frozen_utc": "2026-10-03T13:03:02+00:00",
-  "git_commit_at_freeze": "3c5b9f07c5e7e3d953865cb16fe471e910e46c28",
+  "frozen_utc": "2026-10-03T14:26:23+00:00",
+  "git_commit_at_freeze": "b9b843c6d026a248c28dad49188f9e3488446650",
   "sec_data_through": "2026 Q2",
   "last_public_day": "2026-07-01",
   "claim": "insider clock: buys beat SPY in the first week. public clock: nothing after day 1, buys or sales",
   "sha256": {
-    "results.csv": "cfc2354748a9f3cdc85cfae52350b9188e33cbfe12a3d37a3e25a89aed9ea5c1"
+    "results.csv": "f170f406a4f6d45f905467883812c0607618edd030a290d4de0a7cfe59d9e727"
   }
 }
