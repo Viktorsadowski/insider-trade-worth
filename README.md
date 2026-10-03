@@ -15,13 +15,14 @@ the first day after the filing, when anyone can act on it.
 
 - Hold every stock for three months after an insider buys it, 2006 to 2026. Bought at the close on the insider's
   own trade day: 13.1% a year. Bought at the close after the filing: 10.4% a year. SPY: 11.1%. At three months
-  the trade is worth 1.8% a year to the insider and nothing to anyone else, and neither is significant.
+  the trade is worth 1.8% a year to the insider and nothing to anyone else, and neither is significant. The 1.8%
+  is all from before 2017: since then the same portfolio has returned 11.9% a year against 15.3% for SPY.
 - What the insider has is in the first days. Held for a week only, the same two portfolios return 41.6% and
   11.5% a year.
 - Per trade: insiders buy after the stock has lost 3.4% to the market in a month. A week later it is 0.75% ahead
-  (t = 6.3), after three months 1.4% (t = 2.1). CEOs 1.2% and 2.6%. The first week is there before and after 2017.
+  (t = 6.3), after three months 1.4% (t = 1.6). CEOs 1.2% and 2.6%. The first week is there before and after 2017.
 - Half of the first week comes before the filing, the other half on the day the market reads it. An outsider who
-  buys at the next close gets 0.07% the first day, 0.5% after three months (t = 0.8), and nothing measurable out
+  buys at the next close gets 0.07% the first day, 0.5% after three months (t = 0.6), and nothing measurable out
   to two years once the beta of the stocks is taken out.
 - Sales: the stock lags by 4.9% a year in the week after the sale on the insider's clock, most of it on the day
   the filing is read, and by nothing after that.
@@ -32,10 +33,10 @@ the first day after the filing, when anyone can act on it.
   the test does not separate the two.
 - In 2006-2016 an outsider still got 0.3% in the week after a buy (t = 2.7). That is gone.
 
-![2017 to 2026, from the filing, held for three months](figures/since.png)
+![2017 to 2026, from the filing: $1 held for three months, and the return per year by holding period](figures/since.png)
 
-The 41.6% is not a strategy. Nobody outside can trade at the insider's close, and there are no trading costs
-in it. It is what the information is worth when the trade is made.
+Nobody outside can trade at the insider's close, and there are no trading costs in it, so the 41.6% is what the
+information is worth when the trade is made.
 
 ## Run it
 
@@ -57,8 +58,8 @@ and started again. Everything in data/ is rebuilt by the scripts and is not in g
 - Event: one insider, one company, one filing day, one direction. On the public clock all insiders of a company
   on the same day are one signal.
 - Per trade: total return of the stock minus SPY over 1 day, 1 week, 1, 3, 6, 12 and 24 months, with 3 months
-  as the main one. t-values are clustered by month. Second benchmark: the equal-weighted S&P 500, the average
-  stock.
+  as the main one. t-values are clustered by month, and from three months up they allow for holding periods
+  that overlap. Second benchmark: the equal-weighted S&P 500, the average stock.
 - Every table is made for the whole sample and for 2006-2016 and 2017-2026 on their own (data/results.csv).
 - As a portfolio: every day, all stocks with an insider buy (or sale) in the last week, month, three months ...,
   equal weight, daily returns compounded. One return per year for each clock, plus alpha and beta against SPY.
@@ -74,6 +75,7 @@ and started again. Everything in data/ is rebuilt by the scripts and is not in g
 - 6% of the events are in companies with no free price history (15% in 2006-2012, under 1% since 2020), among
   them several of the 2008 failures. That flatters the buys of the early years.
 - Closing prices only. The outsider buys at the close the day after the filing. No trading costs.
+- The insider's clock starts at the close of his trade day. His own price is about 0.1% better for buys.
 - First Republic and Signature Bank filed with the FDIC, not the SEC, and are not in the data.
 - S&P 500 only. Not looked at: 10b5-1 plans, option exercises, small companies.
 
