@@ -29,8 +29,11 @@ the first day after the filing, when anyone can act on it.
 - After the filing, 2017 to 2026 on their own: the sign is the reverse of the textbook. Held for three months
   from the filing, the stocks insiders bought returned 8.7% a year and the ones they sold 14.1%, against 12.4%
   for the average S&P 500 stock. Neither gap is significant at three months (t = -1.4 and 1.6), so no signal to
-  count on in either direction. Most likely momentum: insiders buy what has fallen and sell what has risen, and
-  the test does not separate the two.
+  count on in either direction.
+- It is not momentum. Insiders do buy what has fallen and sell what has risen: a third of the buys are in the
+  lowest fifth of the index by past return. But S&P 500 stocks with the same past return returned 12.3% and 12.0%
+  a year in the same test, the same as the average stock. The insider's own first week holds up against them
+  too: 0.68% (t = 7.7).
 - In 2006-2016 an outsider still got 0.3% in the week after a buy (t = 2.7). That is gone.
 
 ![2017 to 2026, from the filing: $1 held for three months, and the return per year by holding period](figures/since.png)
@@ -60,6 +63,9 @@ and started again. Everything in data/ is rebuilt by the scripts and is not in g
 - Per trade: total return of the stock minus SPY over 1 day, 1 week, 1, 3, 6, 12 and 24 months, with 3 months
   as the main one. t-values are clustered by month, and from three months up they allow for holding periods
   that overlap. Second benchmark: the equal-weighted S&P 500, the average stock.
+- Control for momentum: every trade once more against the S&P 500 members that were in the same fifth by
+  return over the past year and in the same fifth by return over the past month on day 0. About 17 stocks, the
+  stock itself left out.
 - Every table is made for the whole sample and for 2006-2016 and 2017-2026 on their own (data/results.csv).
 - As a portfolio: every day, all stocks with an insider buy (or sale) in the last week, month, three months ...,
   equal weight, daily returns compounded. One return per year for each clock, plus alpha and beta against SPY.
@@ -77,7 +83,8 @@ and started again. Everything in data/ is rebuilt by the scripts and is not in g
 - Closing prices only. The outsider buys at the close the day after the filing. No trading costs.
 - The insider's clock starts at the close of his trade day. His own price is about 0.1% better for buys.
 - First Republic and Signature Bank filed with the FDIC, not the SEC, and are not in the data.
-- S&P 500 only. Not looked at: 10b5-1 plans, option exercises, small companies.
+- S&P 500 only. Not looked at: 10b5-1 plans, option exercises, small companies. The matched stocks share past
+  return only, not size, valuation or industry.
 
 ## Forward test
 

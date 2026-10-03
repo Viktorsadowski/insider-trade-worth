@@ -12,11 +12,17 @@ two clocks:
 Abnormal return = stock total return minus SPY total return over the same days (ar_*), and minus the
 equal-weighted S&P 500 as a check (arew_*). Columns are named ar_pub_21, ar_ins_126 and so on.
 
+The control for momentum (arm_*): the stock minus the S&P 500 members that had the same past return on day 0.
+Every day the members are sorted into fifths by their return over the past year without its last month, and
+into fifths by their return over the last month. A stock is matched with the members in the same fifth on
+both, about 17 of them, the stock itself left out. mom12_* and mom1_* are the two fifths (1 = the losers).
+
   events.csv       one row per insider event, both clocks, all horizons, with the flags below
   issuer_days.csv  the same collapsed to company + day + direction, the unit for the public clock
   paths.csv        average abnormal return day by day, from 20 days before to 24 months after, for the charts
   calendar_time.csv  daily return of a portfolio that holds every stock for h days after a buy (or sale), on
-                     both clocks
+                     both clocks. port_m and ctrl: the same portfolio for the company-days that have matched
+                     stocks, and the portfolio of those matched stocks
   price_map.csv    which price series each company uses and how well it fits the prices on the Form 4s
   coverage.csv     events per year and side, and how many of them have a price series
 
@@ -41,6 +47,9 @@ from config import BENCHMARK, DATA_DIR, HORIZONS, MANUAL_DIR, ROLES
 from pricefit import year_fit
 
 PRE, POST = 20, max(HORIZONS)          # days before and after day 0 in paths.csv
+MOM_LONG, MOM_SHORT = 252, 21          # past return: the past year without its last month, and the last month
+FIFTHS = 5
+MIN_MATCH = 5                          # a stock needs at least this many matched members, or it has no control
 
 
 # ── prices ─────────────────────────────────────────────────────────────────────
@@ -117,6 +126,70 @@ def extend(adj, raw, days, dl: pd.DataFrame):
     return x
 
 
+# ── stocks with the same past return ───────────────────────────────────────────
+
+def past_fifths(X: np.ndarray, P: np.ndarray):
+    """
+    q12, q1: for every day and stock, the fifth (0 = lowest, 4 = highest) of its return over the past year
+    without the last month, and of its return over the last month. The breakpoints are those of the S&P 500
+    members with a price that day (P), so a stock outside the index gets a fifth too. -1 when its prices do
+    not go that far back
+    """
+    n, m = X.shape
+    r12, r1 = np.full((n, m), np.nan), np.full((n, m), np.nan)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        r12[MOM_LONG:] = X[MOM_LONG - MOM_SHORT: n - MOM_SHORT] / X[: n - MOM_LONG] - 1
+        r1[MOM_SHORT:] = X[MOM_SHORT:] / X[:-MOM_SHORT] - 1
+    out = []
+    for r in (r12, r1):
+        q = np.full((n, m), -1, dtype=np.int8)
+        for t in range(n):
+            ok = P[t] & ~np.isnan(r[t])
+            if ok.sum() < 100:
+                continue
+            has = ~np.isnan(r[t])
+            q[t, has] = np.searchsorted(np.quantile(r[t, ok], np.arange(1, FIFTHS) / FIFTHS), r[t, has],
+                                        side="right")
+        out.append(q)
+    return out
+
+
+def cell_returns(X: np.ndarray, P: np.ndarray, cell: np.ndarray, h: int):
+    """F: return of every stock over the next h days. S, N: per day and group, the sum of F over the members
+    in the group and how many they are"""
+    n, m = X.shape
+    F = np.full((n, m), np.nan)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        F[: n - h] = X[h:] / X[: n - h] - 1
+    S, N = np.zeros((n, FIFTHS * FIFTHS)), np.zeros((n, FIFTHS * FIFTHS))
+    t, k = np.nonzero(P & (cell >= 0) & ~np.isnan(F))
+    np.add.at(S, (t, cell[t, k]), F[t, k])
+    np.add.at(N, (t, cell[t, k]), 1)
+    return F, S, N
+
+
+def matched_weights(P: np.ndarray, cell: np.ndarray, i0: np.ndarray, j: np.ndarray):
+    """
+    For the calendar-time portfolios: the matched stocks of every company-day, as three arrays of the same
+    length. row: which company-day, col: the matched stock, w: 1 / the number of matched stocks, so every
+    company-day puts the same money in its matched stocks as in the stock itself
+    """
+    rows, cols, w, members = [], [], [], {}
+    for r, (t, k) in enumerate(zip(i0, j)):
+        c = cell[t, k]
+        if c < 0:
+            continue
+        if (t, c) not in members:
+            members[(t, c)] = np.flatnonzero(P[t] & (cell[t] == c))
+        mk = members[(t, c)]
+        mk = mk[mk != k]
+        if len(mk) >= MIN_MATCH:
+            rows.append(np.full(len(mk), r))
+            cols.append(mk)
+            w.append(np.full(len(mk), 1 / len(mk)))
+    return np.concatenate(rows), np.concatenate(cols), np.concatenate(w)
+
+
 # ── events ─────────────────────────────────────────────────────────────────────
 
 def build_events(t: pd.DataFrame, days) -> pd.DataFrame:
@@ -170,8 +243,10 @@ def add_flags(e: pd.DataFrame) -> pd.DataFrame:
     return e
 
 
-def add_returns(e: pd.DataFrame, x: pd.DataFrame, ew: np.ndarray, col_of: dict) -> pd.DataFrame:
-    """ar_{clock}_{h} for both clocks and all horizons, plus the move between the two clocks (ar_delay)"""
+def add_returns(e: pd.DataFrame, x: pd.DataFrame, ew: np.ndarray, col_of: dict, P: np.ndarray, q12: np.ndarray,
+                q1: np.ndarray) -> pd.DataFrame:
+    """ar_{clock}_{h} for both clocks and all horizons, plus the move between the two clocks (ar_delay), and
+    arm_{clock}_{h}, the same return against the members with the same past return"""
     X = x.values
     spy = x[BENCHMARK].values
     n = len(spy)
@@ -196,7 +271,25 @@ def add_returns(e: pd.DataFrame, x: pd.DataFrame, ew: np.ndarray, col_of: dict) 
     e["ar_react"] = bhar(e.i_fil.values, e.i_pub.values, spy)[0]
     # the 20 days before the trade: did he buy after a drop, sell after a rise
     e["ar_before"] = bhar(e.i_ins.values - PRE, e.i_ins.values, spy)[0]
-    return e
+
+    # against the members with the same past return. The stock itself is taken out of its group's average
+    cell = np.where((q12 >= 0) & (q1 >= 0), q12.astype(int) * FIFTHS + q1, -1)
+    new = {}
+    for clock, col in (("pub", "i_pub"), ("ins", "i_ins")):
+        i0 = e[col].values
+        new[f"mom12_{clock}"] = np.where(q12[i0, j] >= 0, q12[i0, j] + 1.0, np.nan)      # 1 = the losers
+        new[f"mom1_{clock}"] = np.where(q1[i0, j] >= 0, q1[i0, j] + 1.0, np.nan)
+    for h in HORIZONS:
+        F, S, N = cell_returns(X, P, cell, h)
+        for clock, col in (("pub", "i_pub"), ("ins", "i_ins")):
+            i0 = e[col].values
+            c = cell[i0, j]
+            own = P[i0, j] & (c >= 0) & ~np.isnan(F[i0, j])
+            cnt = N[i0, np.maximum(c, 0)] - own
+            tot = S[i0, np.maximum(c, 0)] - np.where(own, F[i0, j], 0.0)
+            ctrl = np.where((c >= 0) & (cnt >= MIN_MATCH), tot / np.maximum(cnt, 1), np.nan)
+            new[f"arm_{clock}_{h}"] = e[f"ret_{clock}_{h}"].values - ctrl
+    return pd.concat([e, pd.DataFrame(new, index=e.index)], axis=1)
 
 
 def paths(ev: pd.DataFrame, x: pd.DataFrame, col_of: dict, clock: str, groups: dict, bench=None) -> pd.DataFrame:
@@ -221,36 +314,53 @@ def paths(ev: pd.DataFrame, x: pd.DataFrame, col_of: dict, clock: str, groups: d
     return pd.DataFrame(rows)
 
 
-def calendar_time(d: pd.DataFrame, x: pd.DataFrame, col_of: dict, ew: np.ndarray, holds=HORIZONS[1:]) -> pd.DataFrame:
+def calendar_time(d: pd.DataFrame, x: pd.DataFrame, col_of: dict, ew: np.ndarray, P: np.ndarray, cell: np.ndarray,
+                  holds=HORIZONS[1:]) -> pd.DataFrame:
     """
     The same test without overlapping events, and as money: every day, hold every stock with an insider buy
     (or sale) in the last h trading days, equal weight per company-day, and write down that day's portfolio
     return next to SPY's and next to the equal-weighted S&P 500 (ew, the average stock). Once counted from the
     close on the insider's trade day and once from the close on the public day 0. analysis.py turns the daily
     series into an alpha and a compounded return per year.
+
+    port_m and ctrl are the control for momentum: port_m is the same portfolio for the company-days that have
+    matched stocks (a few have none, most of them in 2006), ctrl holds the matched stocks instead, for the
+    same days.
     """
     R = x.pct_change(fill_method=None).values
+    R0 = np.nan_to_num(R)
     spy = x[BENCHMARK].pct_change(fill_method=None).values
     ew_ret = np.r_[np.nan, ew[1:] / ew[:-1] - 1]
     n, m = R.shape
     first = int(d.i_pub.min()) - 1                  # the series starts on the first public day in the data
+
+    def daily(i0, j, w, h):
+        """return per day of the portfolio that puts w in stock j from the day after i0 and for h days"""
+        # +w the day after entry, -w the day after the holding period ends, then a running sum per stock
+        c = np.zeros((n + 1, m))
+        np.add.at(c, (np.minimum(i0 + 1, n), j), w)
+        np.add.at(c, (np.minimum(i0 + h + 1, n), j), -w)
+        c = np.cumsum(c, axis=0)[:n]
+        c[np.isnan(R) | (np.abs(c) < 1e-9)] = 0.0      # the running sum of fractions does not end at exactly 0
+        held = c.sum(axis=1)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            return (c * R0).sum(axis=1) / held, held        # nan on days with nothing held
+
     rows = []
     for side in ("buy", "sell"):
         s = d[(d.side == side) & ~d.mixed_day]
         j = s.price_ticker.map(col_of).values.astype(int)
         for clock, i0 in (("insider", s.i_ins.values), ("public", s.i_pub.values)):
+            mr, mk, mw = matched_weights(P, cell, i0, j)
+            has = np.zeros(len(s), bool)
+            has[mr] = True
             for h in holds:
-                # +1 the day after entry, -1 the day after the holding period ends, then a running sum per stock
-                c = np.zeros((n + 1, m))
-                np.add.at(c, (np.minimum(i0 + 1, n), j), 1.0)
-                np.add.at(c, (np.minimum(i0 + h + 1, n), j), -1.0)
-                c = np.cumsum(c, axis=0)[:n]
-                c[np.isnan(R)] = 0.0
-                held = c.sum(axis=1)
-                with np.errstate(invalid="ignore", divide="ignore"):
-                    port = np.nansum(c * np.nan_to_num(R), axis=1) / held       # nan on days with nothing held
+                port, held = daily(i0, j, 1.0, h)
+                port_m, _ = daily(i0[has], j[has], 1.0, h)
+                ctrl, _ = daily(i0[mr], mk, mw, h)
                 rows.append(pd.DataFrame({"date": x.index, "side": side, "clock": clock, "hold": h, "port": port,
-                                          "spy": spy, "ew": ew_ret, "n_held": held}).iloc[first + 1:])
+                                          "spy": spy, "ew": ew_ret, "n_held": held, "port_m": port_m,
+                                          "ctrl": ctrl}).iloc[first + 1:])
     return pd.concat(rows, ignore_index=True)
 
 
@@ -294,6 +404,10 @@ def main():
         if not v and tk in member.columns:
             member.loc[days.year == y, tk] = False
     ew = (1 + ret.where(member).mean(axis=1).fillna(0.0)).cumprod().values
+    # the same members sorted by past return, for the control for momentum
+    P = member.values & (x.values > 0)
+    q12, q1 = past_fifths(x.values, P)
+    cell = np.where((q12 >= 0) & (q1 >= 0), q12.astype(int) * FIFTHS + q1, -1)
 
     e = build_events(t, days)
     n0 = len(e)
@@ -317,7 +431,7 @@ def main():
     e = e[~no_price].copy()
 
     e = add_flags(e)
-    e = add_returns(e, x, ew, col_of)
+    e = add_returns(e, x, ew, col_of, P, q12, q1)
     e = e.sort_values(["avail_date", "cik", "side", "owner_cik"]).reset_index(drop=True)
     e.drop(columns=["rank", "tickers"]).to_csv(DATA_DIR / "events.csv", index=False)
 
@@ -325,7 +439,8 @@ def main():
     # with the most senior role of the day
     rank = {r: i for i, r in enumerate(ROLES)}
     e["rank"] = e.role.map(rank)
-    keep = [c for c in e.columns if c.startswith(("ar_pub", "arew_pub", "ret_pub"))]
+    keep = [c for c in e.columns if c.startswith(("ar_pub", "arew_pub", "ret_pub", "arm_pub", "mom12_pub",
+                                                   "mom1_pub"))]
     d = e.sort_values("rank", kind="stable").groupby(["cik", "avail_date", "side"], sort=False).agg(
         issuer=("issuer", "first"), price_ticker=("price_ticker", "first"), i_pub=("i_pub", "first"),
         i_ins=("i_ins", "max"), top_role=("role", "first"), n_insiders=("owner_cik", "nunique"),
@@ -345,7 +460,7 @@ def main():
     pd.concat([paths(d, x, col_of, "pub", gp), paths(e, x, col_of, "ins", gi),
                paths(d, x, col_of, "pub", gew, bench=ew)]).to_csv(DATA_DIR / "paths.csv", index=False)
 
-    calendar_time(d, x, col_of, ew).to_csv(DATA_DIR / "calendar_time.csv", index=False)
+    calendar_time(d, x, col_of, ew, P, cell).to_csv(DATA_DIR / "calendar_time.csv", index=False)
 
     print(f"events.csv: {len(e):,} insider events ({(e.side == 'buy').sum():,} buys, {(e.side == 'sell').sum():,} "
           f"sales), {e.cik.nunique()} companies")
@@ -354,6 +469,8 @@ def main():
         s = d[(d.side == side) & ~d.mixed_day]
         print(f"  {side:4} public clock, mean abnormal return in bps: " +
               "  ".join(f"{h}d {s[f'ar_pub_{h}'].mean() * 1e4:+.0f}" for h in HORIZONS))
+        print(f"       against stocks with the same past return:  " +
+              "  ".join(f"{h}d {s[f'arm_pub_{h}'].mean() * 1e4:+.0f}" for h in HORIZONS))
 
 
 if __name__ == "__main__":

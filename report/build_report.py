@@ -180,7 +180,8 @@ s.append(box([
       "for three months, the same stocks return 10.4% a year. Since 2017 the sign is the reverse of the textbook: "
       "the stocks insiders bought returned 8.7% a year and the ones they sold 14.1%, against 12.4% for the average "
       "S&P 500 stock. Neither gap is significant (t = -1.4 and 1.6), so there is no signal to count on in either "
-      "direction. The likely reason is momentum: insiders buy what has fallen and sell what has risen.", abstract),
+      "direction. It is not momentum either: against stocks with the same past return the result is the same.",
+      abstract),
 ]))
 
 # 1
@@ -207,8 +208,9 @@ s.append(P("Prices are daily closes from Yahoo Finance, and from Tiingo for comp
            "with a median of $742k. Insiders sell ten times as often as they buy, since most of their pay is "
            "stock. When they buy, they buy in bursts: November 2008, August 2011 and March 2020 are the three "
            "biggest months (Figure 1)."))
-s.append(figure(FIG / "sample.png", "Figure 1. Left: insider buys per month, events with a price. Right: trading "
-                "days from the insider's last trade to the first close an outsider can act on.", width=TEXT_W))
+s.append(figure(FIG / "sample.png", "Figure 1. Events with a price history. The days are counted from the insider's last trade on the "
+                "filing.",
+                width=TEXT_W))
 s += bullets(lead="The stock is followed on two clocks:", items=[
     "The insider's clock starts at the close on the day of his trade (the last one, if the filing has several). "
     "It measures how well he invests.",
@@ -239,10 +241,9 @@ s.append(P("A dollar that follows every insider buy for three months, starting a
            "trade, grows to $12.74 from 2006 to October 2026, 13.1% a year. Starting at the close after the filing "
            "it grows to $7.78, 10.4% a year, against $8.80 and 11.1% in SPY. Neither is different from SPY once "
            "the beta of the stocks is taken out, and from six months on both clocks end close to it."))
-s.append(figure(FIG / "growth.png", "Figure 2. $1 in a portfolio that holds every stock for three months (left) or "
-                "a week (right) after an insider buy, equal weight, from the two starting points, and $1 in SPY. "
-                "End value and compounded return per year. Log scale, each panel has its own. No trading costs.",
-                width=TEXT_W * 0.92))
+s.append(figure(FIG / "growth.png", "Figure 2. At the end of each line: the end value and the compounded return per year. Each panel has "
+                "its own scale.",
+                width=TEXT_W))
 s.append(P("The gain sits in the first days. Held for a week from the insider's close the dollar grows to $1,347, "
            "41.6% a year. From the close after the filing it grows to $9.58. Nobody outside can trade at the "
            "insider's close, and the portfolio turns over every week before costs, so the 41.6% is what it is "
@@ -250,31 +251,30 @@ s.append(P("The gain sits in the first days. Held for a week from the insider's 
            "the stocks insiders sell return 5.6% a year in the week after the sale, and the same as SPY from the "
            "filing on. Figure 3 has every holding period: the insider's edge fades within three months on both "
            "sides, and the two portfolios an outsider can hold stay at SPY from the first week."))
-s.append(figure(FIG / "holds.png", "Figure 3. Compounded return per year of the four portfolios by holding period, "
-                "2006 to 1 October 2026. A filled point: the alpha against SPY has a t-value above 2. The beta is "
-                "between 1.12 and 1.16 for the bought portfolios and between 0.98 and 1.04 for the sold ones.",
-                width=TEXT_W * 0.74))
+s.append(figure(FIG / "holds.png", "Figure 3. Compounded returns, 2006 to 1 October 2026. The beta is between 1.12 and 1.16 for the "
+                "bought portfolios and between 0.98 and 1.04 for the sold ones.",
+                width=TEXT_W * 0.87))
 
 s.append(P("3.2 Per trade", h2))
+s.append(P("After an insider buys, the stock beats the market by 29 basis points the next day, 75 within a week and "
+           "87 within a month. The average keeps growing, to 143 after three months, but the noise grows faster: "
+           "the t-value is 1.6 there and under 1 from six months on. In money, $1m invested with the insider on "
+           "his trade day is $7,500 ahead of SPY a week later."))
 s.append(table(horizon_table(), [1.3 * cm, 2.1 * cm] + [1.9 * cm] * 7,
                "Table 1. Average stock return minus SPY in basis points, t-value in brackets. The insider: 14,562 "
                "buys and 153,451 sales. An outsider: 9,747 company-days with buys only and 111,354 with sales "
                "only. From six months up there are fewer, up to 11% at 24 months, since the latest filings have "
                "no full holding period yet."))
-s.append(P("After an insider buys, the stock beats the market by 29 basis points the next day, 75 within a week and "
-           "87 within a month. The average keeps growing, to 143 after three months, but the noise grows faster: "
-           "the t-value is 1.6 there and under 1 from six months on. In money, $1m invested with the insider on "
-           "his trade day is $7,500 ahead of SPY a week later."))
 s.append(P("On the public clock the first day gives 7 basis points (t = 2.2), and that is the last number that can "
            "be told from zero. Sales are close to nothing on both clocks: 6 basis points behind after a week on "
            "the insider's clock, most of it on the day after the filing (-5, t = -7.2), so the market reads sales "
            "too. Insiders sell for many reasons, they have to pay taxes and spread their wealth, so a sale says "
            "less than a buy."))
-s.append(figure(FIG / "timeline.png", "Figure 4. Insider buys, before and after the filing. Grey: the month before "
-                "the trade. Blue: from the trade to the close on the day after the filing, where the outsider's "
-                "clock starts. These three follow each other. Light blue: the outsider's first day, week and "
-                "month, all counted from his close, so they overlap. Lines are 95% intervals.",
-                width=TEXT_W * 0.66))
+s.append(figure(FIG / "timeline.png", "Figure 4. Grey and blue follow each other in time. The three light blue bars all start at the "
+                "outsider's close, so they overlap.",
+                width=TEXT_W * 0.81))
+s.append(figure(FIG / "clocks.png", "Figure 5. The two clocks day by day, to 24 months after day 0.",
+                width=TEXT_W))
 s.append(P("Figure 4 shows where the gain is. Insiders buy on weakness: in the month before the trade the stock "
            "has lost 3.4% against the market, and before a sale it has gained 2.5%. From the trade to the close on "
            "the filing day the stock recovers 34 basis points, before most of the market can have seen the "
@@ -282,10 +282,7 @@ s.append(P("Figure 4 shows where the gain is. Insiders buy on weakness: in the m
            "does react to insider buys, and it is done within a day. An outsider who buys at that close gets 7 the "
            "day after. A faster one, buying at the close on the filing day, would catch the 38, which is only "
            "possible for the filings that arrive in trading hours."))
-s.append(figure(FIG / "clocks.png", "Figure 5. Average stock return minus SPY day by day, from day 0 of each "
-                "clock to 24 months after. Dashed: the outsider's line against the average S&P 500 stock instead "
-                "of SPY.", width=TEXT_W * 0.92))
-s.append(P("Over two years the buy lines rise slowly, and that comes from the benchmark. Stocks that insiders buy "
+s.append(P("Over two years the buy lines in Figure 5 rise slowly, and that comes from the benchmark. Stocks that insiders buy "
            "move more than the market, with a beta of about 1.15, and SPY has gone up in most years. Against the "
            "average S&P 500 stock (the equal-weighted index, section 3.4) the outsider's line is flat for three "
            "months and negative after that, and the portfolios from the filing return no more than SPY at any "
@@ -293,19 +290,15 @@ s.append(P("Over two years the buy lines rise slowly, and that comes from the be
            "percent of zero for two years."))
 
 s.append(P("3.3 Who trades", h2))
-s.append(figure(FIG / "roles.png", "Figure 6. Buys by role: average stock return minus SPY after one week and "
-                "after three months, the insider's clock next to the public one. Lines are 95% intervals, and the "
-                "two panels have different scales. Roles are read from the relationship boxes and the title on "
-                "the filing, the most senior one counts, and heads of a division who call themselves CEO are "
-                "other officers.", width=TEXT_W * 0.92))
+s.append(figure(FIG / "roles.png", "Figure 6. Roles are read from the relationship boxes and the title on the filing, the most senior "
+                "one counts, and heads of a division who call themselves CEO are other officers. Not in the chart: "
+                "84 buys by insiders with only the box Other ticked.",
+                width=TEXT_W))
 s.append(P("The CEO does best on his own clock: 123 basis points in the first week against 59 to 100 for the "
            "others, and the difference to them is significant (t = 3.5). After three months he is 257 ahead, the "
            "only role with a t-value above 2 (2.2). On the public clock no role has a three-month result that can be "
            "told from zero. Owners of more than 10% are mostly funds and companies buying large blocks, and "
            "after a month nothing can be said about them."))
-s.append(P("Insiders with only the box Other ticked are not in the chart. They look like an exception at +525 "
-           "basis points three months after the filing, but it is 84 buys, nine of them the Gates foundation trust "
-           "buying AutoNation in the winter of 2008-2009. Without AutoNation the group is at +129."))
 s.append(P("Insiders of the same company often trade in both directions: 10% of the days with a public buy also "
            "have a public sale. The public clock in Table 1 uses days with one direction only. Figure 7 splits "
            "further. A buy with no insider sale in the company that day or the 30 days before is followed by +111 "
@@ -315,9 +308,8 @@ s.append(P("Insiders of the same company often trade in both directions: 10% of 
            "Several insiders buying on the same day are followed by +41 basis points in the first week against +3 "
            "for one alone (t = 2.0). That is the best public number among the splits, and with this many splits "
            "tested one t-value of 2 is what chance gives."))
-s.append(figure(FIG / "mixed.png", "Figure 7. Public clock, three months: company-days with buys (left) and sales "
-                "(right), split by what the other insiders of the company did. Number of days in brackets, bigger "
-                "is in dollars, lines are 95% intervals.", width=TEXT_W * 0.78))
+s.append(figure(FIG / "mixed.png", "Figure 7. The public clock. The two same-day groups are the same company-days in both panels.",
+                width=TEXT_W * 0.92))
 
 s.append(P("3.4 After the filing, 2017 to 2026", h2))
 s.append(P("The last ten years on their own, and only the outsider's question: is anything left after the public "
@@ -326,11 +318,8 @@ s.append(P("The last ten years on their own, and only the outsider's question: i
            "same as SPY, 11.1% a year, but 10.0% against 7.5% in 2006-2016 and 12.4% against 15.3% since, when a "
            "few very large companies carried SPY. To see whether an insider picks a better stock than the next "
            "one in the index, the average stock is the fair comparison."))
-s.append(figure(FIG / "since.png", "Figure 8. 2017 to 1 October 2026, public clock. Left: $1 in every stock "
-                "insiders bought, and in every stock they sold, from the close after the filing and held for three "
-                "months, next to the average S&P 500 stock and SPY. Right: the compounded return per year of the "
-                "same two portfolios for every holding period. A filled point: the alpha against the average "
-                "stock has a t-value above 2.", width=TEXT_W))
+s.append(figure(FIG / "since.png", "Figure 8. 2017 to 1 October 2026, the public clock.",
+                width=TEXT_W))
 s.append(P("The stocks insiders bought did worse than the average stock for every holding period: 8.7% a year "
            "against 12.4% when held for three months. None of it is significant, but it is the wrong sign six "
            "times out of six. Sales go the other way. The stocks insiders sold returned 14.1% a year held for "
@@ -339,12 +328,11 @@ s.append(P("The stocks insiders bought did worse than the average stock for ever
            "months (t = 2.4), while sales by other officers, six in ten, are followed by nothing. Bought "
            "minus sold is negative for every holding period, -4.7% a year at three months (t = -1.2)."))
 s.append(P("So since 2017 a buy is no reason to expect a better stock after the public day, and a sale no reason "
-           "to expect a worse one. If anything it is the other way round. The likely reason is momentum: insiders "
+           "to expect a worse one. If anything it is the other way round. The obvious suspect is momentum: insiders "
            "buy stocks that have fallen and sell stocks that have risen, and what follows may be what follows any "
-           "stock that has just fallen or risen. This test does not separate the two."))
-s.append(figure(FIG / "periods.png", "Figure 9. Insider buys before and after 2017: average stock return minus "
-                "SPY after one week and after three months, the insider's clock next to the public one. Lines are "
-                "95% intervals, and the two panels have different scales.", width=TEXT_W * 0.72))
+           "stock that has just fallen or risen. Section 3.5 tests that."))
+s.append(figure(FIG / "periods.png", "Figure 9. The two halves of the sample, 2006 to 2016 and 2017 to 1 October 2026.",
+                width=TEXT_W * 0.82))
 s.append(P("Before 2017 it was different. The week after the filing gave an outsider 30 basis points (t = 2.7), "
            "and three months gave 178, or 62 against the average stock. Almost all of the three-month number "
            "is one year: stocks that insiders bought during 2009 beat SPY by 16% over the next three months, and "
@@ -352,42 +340,70 @@ s.append(P("Before 2017 it was different. The week after the filing gave an outs
            "before 2017 and 58 after. His three months are gone: 248 basis points before and 11 after, and as a "
            "portfolio 14.1% a year against 7.5% for SPY before 2017 and 11.9% against 15.3% after."))
 
+s.append(P("3.5 Is it momentum?", h2))
+s.append(P("Stocks that have fallen or risen have their own pattern afterwards, whoever trades them, and insiders "
+           "trade exactly those stocks. Sort the S&P 500 members every day into fifths by their return over the "
+           "past year (without its last month), and again by their return over the last month. Of the insider "
+           "buys 32% and 35% are in the lowest fifth, where a fifth would be 20%, and of the sales 27% and 29% are "
+           "in the highest (Figure 10)."))
+s.append(figure(FIG / "past.png", "Figure 10. The stocks as they stood on the public day, days with both buys and sales left out.",
+                width=TEXT_W * 0.84))
+s.append(P("So every trade is measured once more, against the stocks that looked the same: the S&P 500 members in "
+           "the same fifth on both sorts on day 0, about 17 stocks, the stock itself left out. If past return were "
+           "the reason for a result, the result would be zero against these."))
+s.append(figure(FIG / "benchmarks.png", "Figure 11. The main results per trade, once for each benchmark.",
+                width=TEXT_W * 0.92))
+s.append(P("It changes little. The insider's first week is 68 basis points against the matched stocks, where it "
+           "was 75 against SPY, and the t-value goes up to 7.7, since stocks that looked the same take out more "
+           "noise than the index does. His three months are 72 basis points (t = 2.0), and the CEO's 207 "
+           "(t = 3.5). An outsider gets 2 basis points in the first week and -5 after three months. As a portfolio "
+           "the week after an insider buy returns 40.9% a year against 12.6% for the matched stocks."))
+s.append(P("Since 2017 the stocks insiders bought are 50 basis points behind their matched stocks after three "
+           "months, where they were 59 behind the average stock, and the stocks they sold are 40 ahead "
+           "(t = 1.6). As portfolios the bought stocks returned 8.7% a year and their matched stocks 12.3%, the "
+           "sold stocks 14.1% and theirs 12.0% (Figure 12). The matched stocks did what the average stock did, "
+           "12.4%, so in these years it made little difference to the next three months whether a large stock "
+           "had fallen or risen. The reverse sign is still not significant at three months, and for buys it "
+           "grows with the holding period, to 269 basis points after twelve months (t = -2.9). Momentum is not "
+           "the reason for it."))
+s.append(figure(FIG / "lookalikes.png", "Figure 12. 2017 to 1 October 2026, the public clock. Company-days that have matched stocks.",
+                width=TEXT_W * 0.75))
+
 # 4
 s.append(P("4. What it says", h1))
 s.append(P("An insider buy in an S&P 500 company is worth something to the insider, and it is in the first days: "
            "0.75% over the market in a week, more for the CEO, before and after 2017. The three-month gain is "
-           "smaller than its noise and is from before 2017. To anyone else the trade is worth close to nothing. "
-           "The market takes the news in on the day after the filing, and an outsider who buys at that close and "
-           "holds for three months ends 0.6% a year behind SPY."))
-s.append(P("Since 2017 not even the sign holds. Held for three months from the filing, the stocks insiders bought "
-           "have trailed the average S&P 500 stock by 3.3% a year and the ones they sold have led it by 1.5%, "
-           "neither significantly. A model that takes insider trades as an input should not expect buys to be "
-           "good news at a horizon of three months, and should check them against plain momentum first."))
+           "smaller than its noise and is from before 2017. To anyone else the trade is worth close to nothing: "
+           "the market takes the news in on the day after the filing, and an outsider who buys at that close "
+           "ends 0.6% a year behind SPY after three months."))
+s.append(P("Since 2017 not even the sign holds: the stocks insiders bought have trailed the average S&P 500 stock "
+           "by 3.3% a year and the ones they sold have led it by 1.5%, neither significantly, and past return "
+           "does not explain it. A model that takes insider trades as an input should not expect buys to be good "
+           "news at three months."))
 s += bullets(lead="The limits:", items=[
     "Coverage. 6% of the events (9% of the buys) are in companies with no free price history, 11% in 2006-2016 "
     "and 1% since 2017, among them Wachovia, Bear Stearns, Washington Mutual, Lehman Brothers and CIT. Leaving "
     "out the failures flatters the buys of the early years.",
-    "Closing prices and no trading costs. The outsider acts at the close of the day after the filing. A faster "
-    "one gets part of the 38 basis points of that day, and the data cannot say how much. The insider's clock "
-    "starts at the close of his trade day, and for buys the price on his filing is on average about 0.1% under "
-    "that close. The one-week portfolios turn over about 50 times a year.",
-    "Momentum is not controlled for. What follows a buy or a sale is partly what follows any stock that has just "
-    "fallen or risen.",
+    "Closing prices and no trading costs. The outsider acts at the close of the day after the filing, and a "
+    "faster one gets part of the 38 basis points of that day. The insider's clock starts at the close of his "
+    "trade day, and for buys the price on his filing is on average about 0.1% under that close. The one-week "
+    "portfolios turn over about 50 times a year.",
+    "Past return is the only thing the matched stocks share with the stock. Size, valuation and industry are "
+    "not controlled for.",
     "First Republic and Signature Bank are missing. A bank without a holding company files with the FDIC and "
     "not with the SEC.",
     "Large companies only. In small companies, where fewer people read the filings, the result may be different.",
 ])
-s.append(P("Next steps: a control for momentum, trades under 10b5-1 plans (marked on the form since 2023), option "
-           "exercises, opening prices and companies outside the S&P 500. The numbers are frozen in the repository, "
-           "so the same test can be run on later filings."))
+s.append(P("Next steps: a match on size, valuation and industry, 10b5-1 plans, option exercises, opening prices and "
+           "smaller companies. The numbers are frozen in the repository, so the test can be rerun on later "
+           "filings."))
 
 # where the code and the data are
 s.append(Spacer(1, 4))
 s.append(P("Code: github.com/Viktorsadowski/insider-trade-worth, five scripts that rebuild everything from public "
-           "sources (the run order is in the README). Data: SEC insider transactions data sets (sec.gov), S&P 500 "
-           "history from github.com/fja05680/sp500, prices from Yahoo Finance and Tiingo. Nothing in the "
-           "repository is licensed data. The hand-made tables are in data/manual, and data/results.csv has every "
-           "split, also the ones not shown here.", caption))
+           "sources (run order in the README). Data: SEC insider transactions data sets, S&P 500 history from "
+           "github.com/fja05680/sp500, prices from Yahoo Finance and Tiingo, nothing licensed. data/results.csv "
+           "has every split, also the ones not shown here.", caption))
 
 
 # headings stick to whatever comes right after them
