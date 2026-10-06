@@ -13,23 +13,29 @@ the first day after the filing, when anyone can act on it.
 
 ## What comes out
 
-- Hold every stock for three months after an insider buys it, 2006 to 2026. Bought at the close on the insider's
-  own trade day: 13.1% a year. Bought at the close after the filing: 10.4% a year. SPY: 11.1%. At three months
-  the trade is worth 1.8% a year to the insider and nothing to anyone else, and neither is significant. The 1.8%
-  is all from before 2017: since then the same portfolio has returned 11.9% a year against 15.3% for SPY.
-- What the insider has is in the first days. Held for a week only, the same two portfolios return 41.6% and
-  11.5% a year.
-- Per trade: insiders buy after the stock has lost 3.4% to the market in a month. A week later it is 0.75% ahead
-  (t = 6.3), after three months 1.4% (t = 1.6). CEOs 1.2% and 2.6%. The first week is there before and after 2017.
-- Half of the first week comes before the filing, the other half on the day the market reads it. An outsider who
-  buys at the next close gets 0.07% the first day, 0.5% after three months (t = 0.6), and nothing measurable out
-  to two years once the beta of the stocks is taken out.
-- Sales: the stock lags by 4.9% a year in the week after the sale on the insider's clock, most of it on the day
-  the filing is read, and by nothing after that.
-- After the filing, 2017 to 2026 on their own: the sign is the reverse of the textbook. Held for three months
-  from the filing, the stocks insiders bought returned 8.7% a year and the ones they sold 14.1%, against 12.4%
-  for the average S&P 500 stock. Neither gap is significant at three months (t = -1.4 and 1.6), so no signal to
-  count on in either direction.
+The insider's own trade, counted from the close on the day he trades:
+
+- The average insider buy comes after a fall: in the month before the trade the stock has lost 3.4% against the
+  market. A week after the trade it is 0.75% ahead of the market (t = 6.3), after three months 1.4% (t = 1.6).
+  For CEOs 1.2% and 2.6%. The first week is there before and after 2017.
+- Half of the first week comes before the filing, the other half on the day after it, when the market reads it.
+- As a portfolio: hold every stock for a week after an insider buys it and it returns 41.6% a year, against
+  11.1% for SPY. The trade is normally not public at that point and there are no trading costs in it, so
+  this is what the information is worth when the trade is made, not a return an outsider can earn.
+- Held for three months the same portfolio returns 13.1% a year, not significantly more than SPY. That is all
+  from before 2017: since then it has returned 11.9% a year against 15.3% for SPY.
+- Sales: the stocks insiders sell return 5.6% a year in the week after the sale, most of the gap on the day the
+  filing is read, and the same as SPY after that.
+
+A trade on the public filing, bought at the first close after it:
+
+- By then the move is over. The stock gains 0.07% the first day, 0.5% after three months (t = 0.6), and nothing
+  measurable out to two years once the beta of the stocks is taken out. As a portfolio: 10.4% a year when
+  every stock is held for three months and 11.5% when held for a week, against 11.1% for SPY.
+- 2017 to 2026 on their own: the sign is the opposite of the textbook. Held for three months from the filing,
+  the stocks insiders bought returned 8.7% a year and the ones they sold 14.1%, against 12.4% for the average
+  S&P 500 stock. Neither gap is significant at three months (t = -1.4 and 1.6), so no signal to count on in
+  either direction.
 - It is not momentum. Insiders do buy what has fallen and sell what has risen: a third of the buys are in the
   lowest fifth of the index by past return. But S&P 500 stocks with the same past return returned 12.3% and 12.0%
   a year in the same test, the same as the average stock. The insider's own first week holds up against them
@@ -37,9 +43,6 @@ the first day after the filing, when anyone can act on it.
 - In 2006-2016 an outsider still got 0.3% in the week after a buy (t = 2.7). That is gone.
 
 ![2017 to 2026, from the filing: $1 held for three months, and the return per year by holding period](figures/since.png)
-
-Nobody outside can trade at the insider's close, and there are no trading costs in it, so the 41.6% is what the
-information is worth when the trade is made.
 
 ## Run it
 
@@ -70,7 +73,7 @@ and started again. Everything in data/ is rebuilt by the scripts and is not in g
 - As a portfolio: every day, all stocks with an insider buy (or sale) in the last week, month, three months ...,
   equal weight, daily returns compounded. One return per year for each clock, plus alpha and beta against SPY.
 - A company counts if it was in the S&P 500 on the day of the filing (point-in-time members, fja05680/sp500).
-- A price series is only used for a company in the years where the prices on its Form 4s follow the close
+- A price series is only used for a company in the years where the prices on its Form 4s match the close
   (src/pricefit.py). Tickers get reused, this is what keeps another company's prices out.
 - A stock that stops trading is followed to the end: deal price for a cash buyout, last price for a deal in
   shares, zero for a bankruptcy, then SPY (data/manual/delistings.csv, 145 companies, made by hand).

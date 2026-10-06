@@ -278,6 +278,11 @@ FS, FS_NUM, FS_PANEL, FS_HEAD, FS_SUB = 9.5, 9, 11, 13.5, 10      # text sizes: 
 WHISK = dict(fmt="none", ecolor=MUTED, elinewidth=1.0, capsize=0, zorder=4)      # 95% interval, quiet
 
 
+def sg(v, fmt="{:+.0f}"):
+    """a number written on a chart. With a real minus sign, the axes have one too and a hyphen next to it shows"""
+    return fmt.format(v).replace("-", "\u2212")
+
+
 def style(ax, grid_axis="y"):
     ax.set_facecolor(SURFACE)
     ax.grid(axis=grid_axis, color=GRID, lw=0.7)
@@ -412,8 +417,9 @@ def fig_sample():
     style(ax)
     n = E[E.side == "buy"].avail_date.dt.to_period("M").value_counts().sort_index()
     ax.bar(n.index.to_timestamp(how="start") + pd.Timedelta(days=15), n.values, 26, color=BLUE, zorder=3)
-    # the three biggest months by name, at least two years apart. When two are close to each other the later
-    # one gets its name to the right of the bar
+    # the three biggest months by name, at least two years apart. When two are close to each other the earlier
+    # one gets its name to the left of its bar and the later one to the right, so they do not run together.
+    # Short month names, the full ones reach the axis
     named = []
     for m in n.sort_values(ascending=False).index:
         if all(abs((m - o).n) >= 24 for o in named):
@@ -422,10 +428,11 @@ def fig_sample():
             break
     named.sort()
     for i, m in enumerate(named):
-        close = i > 0 and (m - named[i - 1]).n < 60
-        ax.annotate(m.strftime("%B %Y"), (m.to_timestamp() + pd.Timedelta(days=15), n[m]),
-                    xytext=(3 if close else 0, 3), textcoords="offset points", ha="left" if close else "center",
-                    fontsize=FS_NUM, color=INK)
+        after = i > 0 and (m - named[i - 1]).n < 60
+        before = i + 1 < len(named) and (named[i + 1] - m).n < 60
+        ha, dx = ("left", 3) if after else ("right", -3) if before else ("center", 0)
+        ax.annotate(m.strftime("%b %Y"), (m.to_timestamp() + pd.Timedelta(days=15), n[m]), xytext=(dx, 3),
+                    textcoords="offset points", ha=ha, fontsize=FS_NUM, color=INK)
     ax.set_xlim(pd.Timestamp(2005, 9, 1), pd.Timestamp(2026, 12, 31))
     ax.set_xticks([pd.Timestamp(y, 1, 1) for y in range(2006, 2027, 4)])
     ax.set_xticklabels([str(y) for y in range(2006, 2027, 4)])
@@ -486,7 +493,7 @@ def fig_growth():
         ax.set_xticks([pd.Timestamp(y, 1, 1) for y in range(2006, 2027, 5)])
         ax.set_xticklabels([str(y) for y in range(2006, 2027, 5)])
         title(ax, f"Every stock held for {HLAB[hold]}")
-    fig.subplots_adjust(wspace=0.12)
+    fig.subplots_adjust(wspace=0.2)
     head(fig, "A dollar that follows every insider buy",
          "$1 in a portfolio of every S&P 500 stock an insider bought, 2006 to 2026, equal weight: bought at the close "
          "on the insider's own trade day, or at the first close after the filing. Next to $1 in SPY. Log scale, no "
@@ -505,7 +512,7 @@ def hold_lines(ax, a, series, holds, short=False):
         ax.scatter(x[sig], v[sig], s=34, color=col, zorder=4)
         ax.scatter(x[~sig], v[~sig], s=34, facecolor=SURFACE, edgecolor=col, linewidth=1.5, zorder=4)
     ax.set_xticks(x)
-    ax.set_xticklabels([HLAB[h].replace(" months", " m").replace(" month", " m") if short else HLAB[h] for h in holds])
+    ax.set_xticklabels([HLAB[h].replace(" ", "\n") if short else HLAB[h] for h in holds])
     ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0f}%")
     return x
 
@@ -550,7 +557,9 @@ def fig_holds(A):
 
 
 def fig_timeline(R):
-    """buys only: the same average stock, cut into the stretches before and after the filing"""
+    """buys only: the same average stock, cut into the stretches before and after the filing. The month before
+    the trade has a panel and a scale of its own: on one scale its -342 turns the bars after the trade into
+    slivers, and those are the ones the chart is about"""
     t = pick(R, "timing", side="buy").set_index("group")
     h = pick(R, "horizons", side="buy", clock="public").set_index("horizon")
     rows = [("the month\nbefore the trade", t.loc["20 days before the trade"], LIGHT_GREY),
@@ -559,25 +568,29 @@ def fig_timeline(R):
             # the outsider's three all start at his close, so the day is inside the week and the week in the month
             ("an outsider's\nfirst day", h.loc[1], LIGHT_BLUE), ("an outsider's\nfirst week", h.loc[5], LIGHT_BLUE),
             ("an outsider's\nfirst month", h.loc[21], LIGHT_BLUE)]
-    fig, ax = new(8.4, 3.2)
-    style(ax)
-    x = np.arange(len(rows))
-    r = pd.DataFrame([v for _, v, _ in rows])
-    ax.bar(x, r.mean_bps, 0.56, color=[c for _, _, c in rows], zorder=3)
-    ax.errorbar(x, r.mean_bps, yerr=1.96 * r.se_bps, **WHISK)
-    for xi, m, se in zip(x, r.mean_bps, r.se_bps):
-        off = 1.96 * se
-        ax.annotate(f"{m:+.0f}", (xi, m + off if m >= 0 else m - off), xytext=(0, 3 if m >= 0 else -11),
-                    textcoords="offset points", ha="center", fontsize=FS_NUM, color=INK)
-    ax.axhline(0, color=MUTED, lw=0.8)
-    ax.set_xticks(x)
-    ax.set_xticklabels([n for n, _, _ in rows])
-    ax.margins(y=0.1)
-    ylab(ax, "stock minus SPY, basis points")
+    fig, axes = new(8.4, 3.2, ncols=2, gridspec_kw={"width_ratios": [1, 4.4]})
+    for ax, part, name in zip(axes, (rows[:1], rows[1:]), ("Before the trade", "After the trade")):
+        style(ax)
+        x = np.arange(len(part))
+        r = pd.DataFrame([v for _, v, _ in part])
+        ax.bar(x, r.mean_bps, 0.56, color=[c for _, _, c in part], zorder=3)
+        ax.errorbar(x, r.mean_bps, yerr=1.96 * r.se_bps, **WHISK)
+        for xi, m, se in zip(x, r.mean_bps, r.se_bps):
+            off = 1.96 * se
+            ax.annotate(sg(m), (xi, m + off if m >= 0 else m - off), xytext=(0, 3 if m >= 0 else -11),
+                        textcoords="offset points", ha="center", fontsize=FS_NUM, color=INK)
+        ax.axhline(0, color=MUTED, lw=0.8)
+        ax.set_xticks(x)
+        ax.set_xticklabels([n for n, _, _ in part])
+        ax.set_xlim(-0.6, len(part) - 0.4)
+        ax.margins(y=0.16)
+        title(ax, name)
+    ylab(axes[0], "stock minus SPY, basis points")
+    fig.subplots_adjust(wspace=0.16)
     head(fig, "Insider buys: where the gain is",
          "Average return of the stock minus SPY in each stretch around an insider buy, in basis points (100 is 1%), "
          "with 95% intervals. S&P 500 companies, 2006 to 2026. An outsider buys at the close of the day after the "
-         "filing, and his three bars are all counted from there.", panels=False)
+         "filing, and his three bars are all counted from there. The two panels have different scales.")
     save(fig, "timeline.png")
 
 
@@ -595,7 +608,7 @@ def fig_clocks():
             p = P[(P.clock == clock) & (P.group == grp) & (P.day >= 0)].sort_values("day")
             ax.plot(p.day, p["mean"] * 100, color=c, lw=lw, ls=ls, label=lab, zorder=3 if clock == "ins" else 2)
         month_ticks(ax, 0, POST)
-        ax.yaxis.set_major_formatter(lambda v, _: f"{v:+.0f}%" if v else "0%")
+        ax.yaxis.set_major_formatter(lambda v, _: sg(v) + "%" if v else "0%")
         title(ax, "After insider buys" if side == "buy" else "After insider sales")
     no_ticks(axes[1])
     ylab(axes[0], "stock minus SPY since day 0")
@@ -619,7 +632,7 @@ def bars_ci(ax, x, r, col, width=0.38, label=None, fmt="{:+.0f}"):
         if np.isnan(m):
             continue
         off = 1.96 * (0 if np.isnan(s) else s)
-        ax.annotate(fmt.format(m), (xi, m + off if m >= 0 else m - off), xytext=(0, 3 if m >= 0 else -11),
+        ax.annotate(sg(m, fmt), (xi, m + off if m >= 0 else m - off), xytext=(0, 3 if m >= 0 else -11),
                     textcoords="offset points", ha="center", fontsize=FS_NUM, color=INK)
 
 
@@ -640,7 +653,7 @@ def fig_roles(R):
                 n = r.n if h == 5 else n
                 # the number on the insider's bars only, at the end of the interval
                 for m, se, yy in zip(r.mean_bps, r.se_bps, ys):
-                    ax.annotate(f"{m:+.0f}", (m + 1.96 * se, yy), xytext=(4, 0), textcoords="offset points",
+                    ax.annotate(sg(m), (m + 1.96 * se, yy), xytext=(4, 0), textcoords="offset points",
                                 fontsize=FS_NUM, color=INK, va="center")
         ax.axvline(0, color=MUTED, lw=0.8)
         ax.margins(x=0.08)
@@ -682,7 +695,8 @@ def fig_mixed(R):
     head(fig, "Does it matter what the other insiders of the company did?",
          "Average return of the stock minus SPY three months after the filing, in basis points (100 is 1%), with "
          "95% intervals. Days with insider buys and days with insider sales, split by what the other insiders of the "
-         "same company did. In brackets the number of days, bigger means in dollars. S&P 500 companies, 2006 to 2026.")
+         "same company did. In brackets: the number of days. Bigger is measured in dollars. S&P 500 companies, 2006 to "
+         "2026.")
     save(fig, "mixed.png")
 
 
@@ -820,7 +834,7 @@ def fig_benchmarks(R):
                     label=lab, zorder=3 + k)
         if bench == "matched":
             for m, se, yy in zip(r.mean_bps, r.se_bps, ys):
-                ax.annotate(f"{m:+.0f}", (m + 1.96 * se, yy), xytext=(5, 0), textcoords="offset points",
+                ax.annotate(sg(m), (m + 1.96 * se, yy), xytext=(5, 0), textcoords="offset points",
                             fontsize=FS_NUM, color=INK, va="center")
     ax.axvline(0, color=MUTED, lw=0.8, zorder=1)
     ax.set_yticks(y)
